@@ -1,6 +1,6 @@
 <div align="center" style="display: flex; align-items: center; justify-content: center; gap: 2rem;">
   <img src="icons/stoa.svg" alt="Stoa" height="108"/>
-  <span style="font-size: 3rem; font-weight: 200; line-height: 1;">×</span>
+  <span style="display: inline-flex; align-items: center; justify-content: center; height: 108px; font-size: 3rem; font-weight: 200; line-height: 1;">×</span>
   <img src="icons/n8n.svg" alt="n8n" height="72"/>
 </div>
 
