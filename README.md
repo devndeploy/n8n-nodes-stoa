@@ -1,8 +1,10 @@
-<div align="center" style="display: flex; align-items: center; justify-content: center; gap: 2rem;">
-  <img src="icons/stoa.svg" alt="Stoa" height="108"/>
-  <span style="display: inline-flex; align-items: center; justify-content: center; height: 108px; font-size: 3rem; font-weight: 200; line-height: 1;">×</span>
-  <img src="icons/n8n.svg" alt="n8n" height="72"/>
-</div>
+<table align="center">
+  <tr>
+    <td align="center" valign="middle"><img src="icons/stoa.svg" alt="Stoa" height="108"/></td>
+    <td align="center" valign="middle" style="padding: 0 1rem; font-size: 2.5rem; font-weight: 200;">×</td>
+    <td align="center" valign="middle"><img src="icons/n8n.svg" alt="n8n" height="72"/></td>
+  </tr>
+</table>
 
 
 # n8n-nodes-stoa
