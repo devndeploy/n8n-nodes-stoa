@@ -28,7 +28,7 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 ## Operations
 
 * **Ask legal questions** — Get answers to legal questions directly from n8n, powered by Stoa’s French legal knowledge base.
-* **Manage files and folders** — Create, list, and manage your Stoa files and folders from n8n.
+* **Manage files and folders** — Create, list, update, and delete your Stoa files and folders from n8n (Stoa Files node).
 * **Run Stoa workflows** — Trigger and run workflows in Stoa from your n8n automations.
 
 ## Credentials

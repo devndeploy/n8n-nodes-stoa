@@ -14,9 +14,17 @@ export class StoaApi implements ICredentialType {
 	icon: Icon = { light: 'file:../icons/stoa.svg', dark: 'file:../icons/stoa.svg' };
 
 	documentationUrl =
-		'http://localhost:3000/docs/getting-started/how-to-create-api-key';
+		'https://stoa.legal/docs/getting-started/how-to-create-api-key';
 
 	properties: INodeProperties[] = [
+		{
+			displayName: 'API Base URL',
+			name: 'baseUrl',
+			type: 'string',
+			default: 'https://app.monavocat.ai',
+			placeholder: 'https://app.monavocat.ai',
+			description: 'Base URL of the Stoa app (no trailing slash)',
+		},
 		{
 			displayName: 'Access Token',
 			name: 'accessToken',
@@ -30,15 +38,15 @@ export class StoaApi implements ICredentialType {
 		type: 'generic',
 		properties: {
 			headers: {
-				Authorization: '=token {{$credentials?.accessToken}}',
+				Authorization: '=Bearer {{$credentials?.accessToken}}',
 			},
 		},
 	};
 
 	test: ICredentialTestRequest = {
 		request: {
-			baseURL: 'https://api.github.com',
-			url: '/user',
+			baseURL: 'https://app.monavocat.ai',
+			url: '/api/plugins/health',
 			method: 'GET',
 		},
 	};
