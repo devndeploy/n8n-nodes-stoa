@@ -15,6 +15,7 @@ export class StoaChat implements INodeType {
 		group: ['transform'],
 		version: [1],
 		defaultVersion: 1,
+		usableAsTool: true,
 		description: 'Send a message to Stoa and get a reply with content and source references',
 		defaults: {
 			name: 'Stoa Chat',
@@ -23,7 +24,7 @@ export class StoaChat implements INodeType {
 		outputs: [NodeConnectionTypes.Main],
 		credentials: [
 			{
-				name: 'StoaApi',
+				name: 'stoaApi',
 				required: true,
 			},
 		],
@@ -43,6 +44,7 @@ export class StoaChat implements INodeType {
 				description: 'User message to send to Stoa',
 			},
 		],
+		usableAsTool: true,
 	};
 
 	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
@@ -53,7 +55,7 @@ export class StoaChat implements INodeType {
 		for (let i = 0; i < items.length; i++) {
 			try {
 				const message = this.getNodeParameter('message', i) as string;
-				const response = await this.helpers.httpRequestWithAuthentication.call(this, 'StoaApi', {
+				const response = await this.helpers.httpRequestWithAuthentication.call(this, 'stoaApi', {
 					method: 'POST',
 					url: `${baseUrl}/api/plugins/simplified-chat`,
 					headers: {

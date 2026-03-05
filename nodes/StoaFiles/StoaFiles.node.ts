@@ -15,6 +15,7 @@ export class StoaFiles implements INodeType {
 		group: ['transform'],
 		version: [1],
 		defaultVersion: 1,
+		usableAsTool: true,
 		subtitle: '={{ $parameter["resource"] }} / {{ $parameter["operation"] }}',
 		description: 'Manage Stoa files and folders: list, upload, create, update, delete',
 		defaults: {
@@ -24,7 +25,7 @@ export class StoaFiles implements INodeType {
 		outputs: [NodeConnectionTypes.Main],
 		credentials: [
 			{
-				name: 'StoaApi',
+				name: 'stoaApi',
 				required: true,
 			},
 		],
@@ -51,12 +52,12 @@ export class StoaFiles implements INodeType {
 				type: 'options',
 				noDataExpression: true,
 				options: [
-					{ name: 'List', value: 'list' },
-					{ name: 'Upload', value: 'upload', description: 'Files only' },
-					{ name: 'Create', value: 'create', description: 'Folders only' },
-					{ name: 'Get', value: 'get' },
-					{ name: 'Update', value: 'update' },
-					{ name: 'Delete', value: 'delete' },
+					{ name: 'Create', value: 'create', description: 'Folders only', action: 'Create a file' },
+					{ name: 'Delete', value: 'delete', action: 'Delete a file' },
+					{ name: 'Get', value: 'get', action: 'Get a file' },
+					{ name: 'List', value: 'list', action: 'List a file' },
+					{ name: 'Update', value: 'update', action: 'Update a file' },
+					{ name: 'Upload', value: 'upload', description: 'Files only', action: 'Upload a file' },
 				],
 				default: 'list',
 				displayOptions: {
@@ -69,11 +70,11 @@ export class StoaFiles implements INodeType {
 				type: 'options',
 				noDataExpression: true,
 				options: [
-					{ name: 'List', value: 'list' },
-					{ name: 'Create', value: 'create' },
-					{ name: 'Get', value: 'get' },
-					{ name: 'Update', value: 'update' },
-					{ name: 'Delete', value: 'delete' },
+					{ name: 'Create', value: 'create', action: 'Create a folder' },
+					{ name: 'Delete', value: 'delete', action: 'Delete a folder' },
+					{ name: 'Get', value: 'get', action: 'Get a folder' },
+					{ name: 'List', value: 'list', action: 'List a folder' },
+					{ name: 'Update', value: 'update', action: 'Update a folder' },
 				],
 				default: 'list',
 				displayOptions: {
@@ -101,6 +102,7 @@ export class StoaFiles implements INodeType {
 				displayName: 'Limit',
 				name: 'limit',
 				type: 'number',
+				description: 'Max number of results to return',
 				default: 50,
 				typeOptions: { min: 1, max: 100 },
 				displayOptions: { show: { resource: ['file'], operation: ['list'] } },
@@ -177,6 +179,7 @@ export class StoaFiles implements INodeType {
 				displayName: 'Limit',
 				name: 'limit',
 				type: 'number',
+				description: 'Max number of results to return',
 				default: 50,
 				typeOptions: { min: 1, max: 100 },
 				displayOptions: { show: { resource: ['folder'], operation: ['list'] } },
@@ -233,6 +236,7 @@ export class StoaFiles implements INodeType {
 				displayOptions: { show: { resource: ['folder'], operation: ['update'] } },
 			},
 		],
+		usableAsTool: true,
 	};
 
 	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
@@ -256,7 +260,7 @@ export class StoaFiles implements INodeType {
 						if (folder_id !== '') params.folder_id = folder_id;
 						if (search !== '') params.search = search;
 						const qs = new URLSearchParams(params as Record<string, string>).toString();
-						response = await this.helpers.httpRequestWithAuthentication.call(this, 'StoaApi', {
+						response = await this.helpers.httpRequestWithAuthentication.call(this, 'stoaApi', {
 							method: 'GET',
 							url: `${baseUrl}/api/plugins/files?${qs}`,
 							json: true,
@@ -274,7 +278,7 @@ export class StoaFiles implements INodeType {
 						const fileName = (binary as IDataObject).fileName as string || 'file';
 						formData.append('file', new Blob([buffer]), fileName);
 						if (folder_id !== '') formData.append('folder_id', folder_id);
-						response = await this.helpers.httpRequestWithAuthentication.call(this, 'StoaApi', {
+						response = await this.helpers.httpRequestWithAuthentication.call(this, 'stoaApi', {
 							method: 'POST',
 							url: `${baseUrl}/api/plugins/files`,
 							body: formData,
@@ -282,7 +286,7 @@ export class StoaFiles implements INodeType {
 						});
 					} else if (operation === 'get') {
 						const fileId = this.getNodeParameter('fileId', i) as string;
-						response = await this.helpers.httpRequestWithAuthentication.call(this, 'StoaApi', {
+						response = await this.helpers.httpRequestWithAuthentication.call(this, 'stoaApi', {
 							method: 'GET',
 							url: `${baseUrl}/api/plugins/files/${fileId}`,
 							json: true,
@@ -301,7 +305,7 @@ export class StoaFiles implements INodeType {
 						if (Object.keys(body).length === 0) {
 							throw new NodeOperationError(this.getNode(), 'Provide at least one of Name, Folder ID, or Tag IDs', { itemIndex: i });
 						}
-						response = await this.helpers.httpRequestWithAuthentication.call(this, 'StoaApi', {
+						response = await this.helpers.httpRequestWithAuthentication.call(this, 'stoaApi', {
 							method: 'PATCH',
 							url: `${baseUrl}/api/plugins/files/${fileId}`,
 							body,
@@ -309,7 +313,7 @@ export class StoaFiles implements INodeType {
 						});
 					} else if (operation === 'delete') {
 						const fileId = this.getNodeParameter('fileId', i) as string;
-						response = await this.helpers.httpRequestWithAuthentication.call(this, 'StoaApi', {
+						response = await this.helpers.httpRequestWithAuthentication.call(this, 'stoaApi', {
 							method: 'DELETE',
 							url: `${baseUrl}/api/plugins/files/${fileId}`,
 							json: true,
@@ -325,7 +329,7 @@ export class StoaFiles implements INodeType {
 						const params: IDataObject = { limit, offset };
 						if (parent_id !== '') params.parent_id = parent_id;
 						const qs = new URLSearchParams(params as Record<string, string>).toString();
-						response = await this.helpers.httpRequestWithAuthentication.call(this, 'StoaApi', {
+						response = await this.helpers.httpRequestWithAuthentication.call(this, 'stoaApi', {
 							method: 'GET',
 							url: `${baseUrl}/api/plugins/files/folders?${qs}`,
 							json: true,
@@ -333,7 +337,7 @@ export class StoaFiles implements INodeType {
 					} else if (operation === 'create') {
 						const name = this.getNodeParameter('name', i) as string;
 						const parent_id = this.getNodeParameter('parent_id', i) as string;
-						response = await this.helpers.httpRequestWithAuthentication.call(this, 'StoaApi', {
+						response = await this.helpers.httpRequestWithAuthentication.call(this, 'stoaApi', {
 							method: 'POST',
 							url: `${baseUrl}/api/plugins/files/folders`,
 							body: { name, parent_id: parent_id === '' ? null : parent_id },
@@ -341,7 +345,7 @@ export class StoaFiles implements INodeType {
 						});
 					} else if (operation === 'get') {
 						const folderId = this.getNodeParameter('folderId', i) as string;
-						response = await this.helpers.httpRequestWithAuthentication.call(this, 'StoaApi', {
+						response = await this.helpers.httpRequestWithAuthentication.call(this, 'stoaApi', {
 							method: 'GET',
 							url: `${baseUrl}/api/plugins/files/folders/${folderId}`,
 							json: true,
@@ -356,7 +360,7 @@ export class StoaFiles implements INodeType {
 						if (Object.keys(body).length === 0) {
 							throw new NodeOperationError(this.getNode(), 'Provide at least one of Name or Parent Folder ID', { itemIndex: i });
 						}
-						response = await this.helpers.httpRequestWithAuthentication.call(this, 'StoaApi', {
+						response = await this.helpers.httpRequestWithAuthentication.call(this, 'stoaApi', {
 							method: 'PATCH',
 							url: `${baseUrl}/api/plugins/files/folders/${folderId}`,
 							body,
@@ -364,7 +368,7 @@ export class StoaFiles implements INodeType {
 						});
 					} else if (operation === 'delete') {
 						const folderId = this.getNodeParameter('folderId', i) as string;
-						response = await this.helpers.httpRequestWithAuthentication.call(this, 'StoaApi', {
+						response = await this.helpers.httpRequestWithAuthentication.call(this, 'stoaApi', {
 							method: 'DELETE',
 							url: `${baseUrl}/api/plugins/files/folders/${folderId}`,
 							json: true,

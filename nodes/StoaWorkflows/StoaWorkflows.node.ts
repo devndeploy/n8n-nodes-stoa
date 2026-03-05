@@ -15,6 +15,7 @@ export class StoaWorkflows implements INodeType {
 		group: ['transform'],
 		version: [1],
 		defaultVersion: 1,
+		usableAsTool: true,
 		subtitle: '={{ $parameter["resource"] }} / {{ $parameter["operation"] }}',
 		description: 'Call Stoa workflow API: run workflows (doc review, summarize, legal refs) or get resources (validation templates)',
 		defaults: {
@@ -24,7 +25,7 @@ export class StoaWorkflows implements INodeType {
 		outputs: [NodeConnectionTypes.Main],
 		credentials: [
 			{
-				name: 'StoaApi',
+				name: 'stoaApi',
 				required: true,
 			},
 		],
@@ -41,7 +42,7 @@ export class StoaWorkflows implements INodeType {
 				noDataExpression: true,
 				options: [
 					{ name: 'Run Workflow', value: 'run', description: 'Doc review, summarize, legal refs' },
-					{ name: 'Dependencies', value: 'resources', description: 'Validation templates and other resources' },
+					{ name: 'Dependency', value: 'resources', description: 'Validation templates and other resources' },
 				],
 				default: 'run',
 			},
@@ -51,9 +52,9 @@ export class StoaWorkflows implements INodeType {
 				type: 'options',
 				noDataExpression: true,
 				options: [
-					{ name: 'Doc Review', value: 'docReview' },
-					{ name: 'Summarize', value: 'summarize' },
-					{ name: 'Legal Refs', value: 'legalRefs' },
+					{ name: 'Doc Review', value: 'docReview', action: 'Doc review a run' },
+					{ name: 'Summarize', value: 'summarize', action: 'Summarize a run' },
+					{ name: 'Legal Refs', value: 'legalRefs', action: 'Legal refs a run' },
 				],
 				default: 'docReview',
 				displayOptions: {
@@ -66,7 +67,7 @@ export class StoaWorkflows implements INodeType {
 				type: 'options',
 				noDataExpression: true,
 				options: [
-					{ name: 'Get Validation Templates', value: 'validationTemplates' },
+					{ name: 'Get Validation Templates', value: 'validationTemplates', action: 'Get validation templates a resource' },
 				],
 				default: 'validationTemplates',
 				displayOptions: {
@@ -107,6 +108,7 @@ export class StoaWorkflows implements INodeType {
 				displayOptions: { show: { resource: ['run'], operation: ['summarize'] } },
 			},
 		],
+		usableAsTool: true,
 	};
 
 	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
@@ -120,7 +122,7 @@ export class StoaWorkflows implements INodeType {
 				let response: unknown;
 
 				if (operation === 'validationTemplates') {
-					response = await this.helpers.httpRequestWithAuthentication.call(this, 'StoaApi', {
+					response = await this.helpers.httpRequestWithAuthentication.call(this, 'stoaApi', {
 						method: 'GET',
 						url: `${baseUrl}/api/plugins/workflows/validation-templates`,
 						json: true,
@@ -128,7 +130,7 @@ export class StoaWorkflows implements INodeType {
 				} else if (operation === 'docReview') {
 					const validation_template_id = this.getNodeParameter('validation_template_id', i) as string;
 					const text = this.getNodeParameter('text', i) as string;
-					response = await this.helpers.httpRequestWithAuthentication.call(this, 'StoaApi', {
+					response = await this.helpers.httpRequestWithAuthentication.call(this, 'stoaApi', {
 						method: 'POST',
 						url: `${baseUrl}/api/plugins/workflows/doc-review`,
 						body: { validation_template_id, text },
@@ -137,7 +139,7 @@ export class StoaWorkflows implements INodeType {
 				} else if (operation === 'summarize') {
 					const text = this.getNodeParameter('text', i) as string;
 					const type = this.getNodeParameter('type', i) as string;
-					response = await this.helpers.httpRequestWithAuthentication.call(this, 'StoaApi', {
+					response = await this.helpers.httpRequestWithAuthentication.call(this, 'stoaApi', {
 						method: 'POST',
 						url: `${baseUrl}/api/plugins/workflows/summarize`,
 						body: { text, type },
@@ -145,7 +147,7 @@ export class StoaWorkflows implements INodeType {
 					});
 				} else if (operation === 'legalRefs') {
 					const text = this.getNodeParameter('text', i) as string;
-					response = await this.helpers.httpRequestWithAuthentication.call(this, 'StoaApi', {
+					response = await this.helpers.httpRequestWithAuthentication.call(this, 'stoaApi', {
 						method: 'POST',
 						url: `${baseUrl}/api/plugins/workflows/legal-refs`,
 						body: { text },

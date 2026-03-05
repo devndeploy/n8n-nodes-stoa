@@ -7,11 +7,11 @@ import type {
 } from 'n8n-workflow';
 
 export class StoaApi implements ICredentialType {
-	name = 'StoaApi';
+	name = 'stoaApi';
 
 	displayName = 'Stoa API';
 
-	icon: Icon = { light: 'file:../icons/stoa.svg', dark: 'file:../icons/stoa.svg' };
+	icon: Icon = { light: 'file:../icons/stoa.svg', dark: 'file:../icons/stoa-dark.svg' };
 
 	documentationUrl =
 		'https://stoa.legal/docs/getting-started/how-to-create-api-key';
