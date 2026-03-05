@@ -1,6 +1,6 @@
 {
 	"name": "n8n-nodes-stoa",
-	"version": "0.1.0",
+	"version": "1.0.0",
 	"description": "French legal AI for legal professionals: answers legal questions and manages documents with up-to-date French legislation.",
 	"license": "MIT",
 	"homepage": "https://www.stoa.legal/",
@@ -31,7 +31,7 @@
 		"n8nNodesApiVersion": 1,
 		"strict": false,
 		"credentials": [
-			"dist/credentials/StoaApi.credentials.js"		
+			"dist/credentials/StoaApi.credentials.js"
 		],
 		"nodes": [
 			"dist/nodes/StoaWorkflows/StoaWorkflows.node.js",
