@@ -31,7 +31,7 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 
 ## Credentials
 
-This node uses **API key** credentials. Create and copy your API key from the [settings page](https://app.stoa.legal) in Stoa (log in, then open Settings).
+This node uses **API key** credentials. For step-by-step instructions on creating and managing your API key, see the [Stoa documentation](https://www.stoa.legal/docs/getting-started/how-to-create-api-key).
 
 ## Compatibility
 
@@ -40,4 +40,4 @@ Works with any n8n version. There are no known version compatibility issues.
 ## Resources
 
 * [n8n community nodes documentation](https://docs.n8n.io/integrations/#community-nodes)
-* [Stoa.legal](https://www.stoa.legal/) — Legal AI for legal professionals (lawyers, notaries, juristes, …)
+* [stoa.legal documentation](https://www.stoa.legal/docs)
