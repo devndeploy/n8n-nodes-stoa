@@ -9,7 +9,7 @@ export class GithubIssues implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'GitHub Issues',
 		name: 'githubIssues',
-		icon: { light: 'file:../../icons/github.svg', dark: 'file:../../icons/github.dark.svg' },
+		icon: 'file:../../icons/stoa.svg',
 		group: ['input'],
 		version: 1,
 		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',

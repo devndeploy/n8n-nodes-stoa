@@ -1,20 +1,20 @@
 import type {
 	IAuthenticateGeneric,
-	Icon,
 	ICredentialTestRequest,
 	ICredentialType,
+	Icon,
 	INodeProperties,
 } from 'n8n-workflow';
 
-export class GithubIssuesApi implements ICredentialType {
-	name = 'githubIssuesApi';
+export class StoaApi implements ICredentialType {
+	name = 'StoaApi';
 
-	displayName = 'GitHub Issues API';
+	displayName = 'Stoa API';
 
-	icon: Icon = { light: 'file:../icons/github.svg', dark: 'file:../icons/github.dark.svg' };
+	icon: Icon = { light: 'file:../icons/stoa.svg', dark: 'file:../icons/stoa.svg' };
 
 	documentationUrl =
-		'https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#deleting-a-personal-access-token';
+		'http://localhost:3000/docs/getting-started/how-to-create-api-key';
 
 	properties: INodeProperties[] = [
 		{
