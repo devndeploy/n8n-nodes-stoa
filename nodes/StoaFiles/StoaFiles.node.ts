@@ -236,7 +236,6 @@ export class StoaFiles implements INodeType {
 				displayOptions: { show: { resource: ['folder'], operation: ['update'] } },
 			},
 		],
-		usableAsTool: true,
 	};
 
 	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {

@@ -108,7 +108,6 @@ export class StoaWorkflows implements INodeType {
 				displayOptions: { show: { resource: ['run'], operation: ['summarize'] } },
 			},
 		],
-		usableAsTool: true,
 	};
 
 	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {

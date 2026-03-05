@@ -44,7 +44,6 @@ export class StoaChat implements INodeType {
 				description: 'User message to send to Stoa',
 			},
 		],
-		usableAsTool: true,
 	};
 
 	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
