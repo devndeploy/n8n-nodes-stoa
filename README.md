@@ -13,8 +13,6 @@ This is an n8n community node. It lets you use [Stoa](https://www.stoa.legal/) i
 
 Stoa is French legal AI for legal professionals (lawyers, notaries, juristes, …): it answers legal questions and manages documents with up-to-date French legislation.
 
-[n8n](https://n8n.io/) is a [fair-code licensed](https://docs.n8n.io/reference/license/) workflow automation platform.
-
 [Installation](#installation)  
 [Operations](#operations)  
 [Credentials](#credentials)
