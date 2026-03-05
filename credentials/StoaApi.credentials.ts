@@ -18,19 +18,17 @@ export class StoaApi implements ICredentialType {
 
 	properties: INodeProperties[] = [
 		{
-			displayName: 'API Base URL',
-			name: 'baseUrl',
-			type: 'string',
-			default: 'https://app.monavocat.ai',
-			placeholder: 'https://app.monavocat.ai',
-			description: 'Base URL of the Stoa app (no trailing slash)',
-		},
-		{
 			displayName: 'Access Token',
 			name: 'accessToken',
 			type: 'string',
 			typeOptions: { password: true },
 			default: '',
+		},
+		{
+			displayName: 'Allowed HTTP Request Domains',
+			name: 'allowedHttpRequestDomains',
+			type: 'hidden',
+			default: 'app.stoa.legal',
 		},
 	];
 
@@ -45,7 +43,7 @@ export class StoaApi implements ICredentialType {
 
 	test: ICredentialTestRequest = {
 		request: {
-			baseURL: 'https://app.monavocat.ai',
+			baseURL: 'https://app.stoa.legal',
 			url: '/api/plugins/health',
 			method: 'GET',
 		},

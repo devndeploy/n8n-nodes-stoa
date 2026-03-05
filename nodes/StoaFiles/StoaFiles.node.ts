@@ -240,9 +240,7 @@ export class StoaFiles implements INodeType {
 		const returnData: INodeExecutionData[] = [];
 		const resource = this.getNodeParameter('resource', 0) as string;
 		const operation = this.getNodeParameter('operation', 0) as string;
-
-		const credentials = await this.getCredentials('StoaApi');
-		const baseUrl = (credentials?.baseUrl as string)?.replace(/\/$/, '') || 'https://app.monavocat.ai';
+		const baseUrl = 'https://app.stoa.legal';
 
 		for (let i = 0; i < items.length; i++) {
 			try {

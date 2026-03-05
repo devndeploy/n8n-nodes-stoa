@@ -48,11 +48,7 @@ export class StoaChat implements INodeType {
 	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
 		const items = this.getInputData();
 		const returnData: INodeExecutionData[] = [];
-
-		const credentials = await this.getCredentials('StoaApi');
-		const rawBaseUrl = (credentials?.baseUrl as string)?.replace(/\/$/, '') || 'https://app.monavocat.ai';
-		// Avoid 301 redirect from app.monavocat.ai -> app.stoa.legal, which can rewrite POST to GET.
-		const baseUrl = rawBaseUrl.replace(/^https?:\/\/app\.monavocat\.ai(?=\/|$)/, 'https://app.stoa.legal');
+		const baseUrl = 'https://app.stoa.legal';
 
 		for (let i = 0; i < items.length; i++) {
 			try {

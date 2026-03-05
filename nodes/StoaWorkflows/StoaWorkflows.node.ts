@@ -113,9 +113,7 @@ export class StoaWorkflows implements INodeType {
 		const items = this.getInputData();
 		const returnData: INodeExecutionData[] = [];
 		const operation = this.getNodeParameter('operation', 0) as string;
-
-		const credentials = await this.getCredentials('StoaApi');
-		const baseUrl = (credentials?.baseUrl as string)?.replace(/\/$/, '') || 'https://app.monavocat.ai';
+		const baseUrl = 'https://app.stoa.legal';
 
 		for (let i = 0; i < items.length; i++) {
 			try {
