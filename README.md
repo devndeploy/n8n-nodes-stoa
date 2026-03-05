@@ -1,8 +1,8 @@
-<table align="center">
+<table align="center" border="0" cellpadding="0" cellspacing="0" style="border: none; border-collapse: collapse;">
   <tr>
-    <td align="center" valign="middle"><img src="icons/stoa.svg" alt="Stoa" height="108"/></td>
-    <td align="center" valign="middle" style="padding: 0 1rem; font-size: 2.5rem; font-weight: 200;">×</td>
-    <td align="center" valign="middle"><img src="icons/n8n.svg" alt="n8n" height="72"/></td>
+    <td align="center" valign="middle" style="border: none; padding: 0;"><img src="icons/stoa.svg" alt="Stoa" height="108"/></td>
+    <td align="center" valign="middle" style="border: none; padding: 0 1rem; font-size: 2.5rem; font-weight: 200;">×</td>
+    <td align="center" valign="middle" style="border: none; padding: 0;"><img src="icons/n8n.svg" alt="n8n" height="72"/></td>
   </tr>
 </table>
 
