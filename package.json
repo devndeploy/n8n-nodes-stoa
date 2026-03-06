@@ -34,9 +34,7 @@
 			"dist/credentials/StoaApi.credentials.js"
 		],
 		"nodes": [
-			"dist/nodes/StoaWorkflows/StoaWorkflows.node.js",
-			"dist/nodes/StoaChat/StoaChat.node.js",
-			"dist/nodes/StoaFiles/StoaFiles.node.js"
+			"dist/nodes/Stoa/Stoa.node.js"
 		]
 	},
 	"devDependencies": {

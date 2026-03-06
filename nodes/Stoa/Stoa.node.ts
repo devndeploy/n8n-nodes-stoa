@@ -7,19 +7,19 @@ import type {
 } from 'n8n-workflow';
 import { NodeConnectionTypes, NodeOperationError } from 'n8n-workflow';
 
-export class StoaFiles implements INodeType {
+export class Stoa implements INodeType {
 	description: INodeTypeDescription = {
-		displayName: 'Stoa Files',
-		name: 'stoaFiles',
+		displayName: 'Stoa',
+		name: 'stoa',
 		icon: 'file:../../icons/stoa.svg',
 		group: ['transform'],
 		version: [1],
 		defaultVersion: 1,
 		usableAsTool: true,
-		subtitle: '={{ $parameter["resource"] }} / {{ $parameter["operation"] }}',
-		description: 'Manage Stoa files and folders: list, upload, create, update, delete',
+		subtitle: '={{ $parameter["resource"] }}',
+		description: 'Stoa: ask legal questions, manage files and folders, run workflows (doc review, summarize, legal refs)',
 		defaults: {
-			name: 'Stoa Files',
+			name: 'Stoa',
 		},
 		inputs: [NodeConnectionTypes.Main],
 		outputs: [NodeConnectionTypes.Main],
@@ -35,17 +35,33 @@ export class StoaFiles implements INodeType {
 			},
 		},
 		properties: [
+			// --- Resource selector
 			{
 				displayName: 'Resource',
 				name: 'resource',
 				type: 'options',
 				noDataExpression: true,
 				options: [
-					{ name: 'File', value: 'file' },
-					{ name: 'Folder', value: 'folder' },
+					{ name: 'Chat', value: 'chat', description: 'Ask a legal question' },
+					{ name: 'File', value: 'file', description: 'Manage files' },
+					{ name: 'Folder', value: 'folder', description: 'Manage folders' },
+					{ name: 'Workflow', value: 'workflow', description: 'Doc review, summarize, legal refs' },
+					{ name: 'Modèles', value: 'modeles', description: 'Validation templates and other resources' },
 				],
-				default: 'file',
+				default: 'chat',
 			},
+			// --- Chat
+			{
+				displayName: 'Message',
+				name: 'message',
+				type: 'string',
+				typeOptions: { rows: 4 },
+				default: '',
+				required: true,
+				description: 'User message to send to Stoa',
+				displayOptions: { show: { resource: ['chat'] } },
+			},
+			// --- File operations
 			{
 				displayName: 'Operation',
 				name: 'operation',
@@ -60,10 +76,9 @@ export class StoaFiles implements INodeType {
 					{ name: 'Upload', value: 'upload', description: 'Files only', action: 'Upload a file' },
 				],
 				default: 'list',
-				displayOptions: {
-					show: { resource: ['file'] },
-				},
+				displayOptions: { show: { resource: ['file'] } },
 			},
+			// --- Folder operations
 			{
 				displayName: 'Operation',
 				name: 'operation',
@@ -77,9 +92,65 @@ export class StoaFiles implements INodeType {
 					{ name: 'Update', value: 'update', action: 'Update a folder' },
 				],
 				default: 'list',
-				displayOptions: {
-					show: { resource: ['folder'] },
-				},
+				displayOptions: { show: { resource: ['folder'] } },
+			},
+			// --- Workflow Run operations
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				options: [
+					{ name: 'Doc Review', value: 'docReview', action: 'Doc review a run' },
+					{ name: 'Summarize', value: 'summarize', action: 'Summarize a run' },
+					{ name: 'Legal Refs', value: 'legalRefs', action: 'Legal refs a run' },
+				],
+				default: 'docReview',
+				displayOptions: { show: { resource: ['workflow'] } },
+			},
+			// --- Modèles operations
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				options: [
+					{ name: 'Get Validation Templates', value: 'validationTemplates', action: 'Get validation templates' },
+				],
+				default: 'validationTemplates',
+				displayOptions: { show: { resource: ['modeles'] } },
+			},
+			// --- Workflow: Doc Review
+			{
+				displayName: 'Template ID',
+				name: 'validation_template_id',
+				type: 'string',
+				default: '',
+				required: true,
+				displayOptions: { show: { resource: ['workflow'], operation: ['docReview'] } },
+				description: 'Validation template UUID',
+			},
+			{
+				displayName: 'Text',
+				name: 'text',
+				type: 'string',
+				typeOptions: { rows: 4 },
+				default: '',
+				required: true,
+				displayOptions: { show: { resource: ['workflow'], operation: ['docReview', 'summarize', 'legalRefs'] } },
+				description: 'Document text (with sentence IDs like [0], [1] for doc review)',
+			},
+			{
+				displayName: 'Summary Type',
+				name: 'type',
+				type: 'options',
+				options: [
+					{ name: 'Concise', value: 'concise' },
+					{ name: 'Normal', value: 'normal' },
+					{ name: 'Developed', value: 'developed' },
+				],
+				default: 'normal',
+				displayOptions: { show: { resource: ['workflow'], operation: ['summarize'] } },
 			},
 			// --- File list
 			{
@@ -242,14 +313,59 @@ export class StoaFiles implements INodeType {
 		const items = this.getInputData();
 		const returnData: INodeExecutionData[] = [];
 		const resource = this.getNodeParameter('resource', 0) as string;
-		const operation = this.getNodeParameter('operation', 0) as string;
+		const operation = resource !== 'chat' ? (this.getNodeParameter('operation', 0) as string) : '';
 		const baseUrl = 'https://app.stoa.legal';
 
 		for (let i = 0; i < items.length; i++) {
 			try {
 				let response: unknown;
 
-				if (resource === 'file') {
+				if (resource === 'chat') {
+					const message = this.getNodeParameter('message', i) as string;
+					response = await this.helpers.httpRequestWithAuthentication.call(this, 'stoaApi', {
+						method: 'POST',
+						url: `${baseUrl}/api/plugins/simplified-chat`,
+						headers: { 'Content-Type': 'application/json' },
+						body: { message },
+						json: true,
+					});
+				} else if (resource === 'workflow') {
+					if (operation === 'docReview') {
+						const validation_template_id = this.getNodeParameter('validation_template_id', i) as string;
+						const text = this.getNodeParameter('text', i) as string;
+						response = await this.helpers.httpRequestWithAuthentication.call(this, 'stoaApi', {
+							method: 'POST',
+							url: `${baseUrl}/api/plugins/workflows/doc-review`,
+							body: { validation_template_id, text },
+							json: true,
+						});
+					} else if (operation === 'summarize') {
+						const text = this.getNodeParameter('text', i) as string;
+						const type = this.getNodeParameter('type', i) as string;
+						response = await this.helpers.httpRequestWithAuthentication.call(this, 'stoaApi', {
+							method: 'POST',
+							url: `${baseUrl}/api/plugins/workflows/summarize`,
+							body: { text, type },
+							json: true,
+						});
+					} else if (operation === 'legalRefs') {
+						const text = this.getNodeParameter('text', i) as string;
+						response = await this.helpers.httpRequestWithAuthentication.call(this, 'stoaApi', {
+							method: 'POST',
+							url: `${baseUrl}/api/plugins/workflows/legal-refs`,
+							body: { text },
+							json: true,
+						});
+					} else {
+						throw new NodeOperationError(this.getNode(), `Unknown workflow operation: ${operation}`);
+					}
+				} else if (resource === 'modeles') {
+					response = await this.helpers.httpRequestWithAuthentication.call(this, 'stoaApi', {
+						method: 'GET',
+						url: `${baseUrl}/api/plugins/workflows/validation-templates`,
+						json: true,
+					});
+				} else if (resource === 'file') {
 					if (operation === 'list') {
 						const folder_id = this.getNodeParameter('folder_id', i) as string;
 						const search = this.getNodeParameter('search', i) as string;
@@ -380,7 +496,7 @@ export class StoaFiles implements INodeType {
 				}
 
 				returnData.push({
-					json: ((response ?? {}) as IDataObject),
+					json: (response ?? {}) as IDataObject,
 					pairedItem: { item: i },
 				});
 			} catch (error) {
