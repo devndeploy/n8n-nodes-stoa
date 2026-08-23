@@ -57,7 +57,19 @@ that used the removed Chat action.
 
 ## Release
 
-Bump the package version, push to `master`, wait for CI, then run:
+Set the version in `package.json` and `package-lock.json`, then generate and
+review its changelog entry before tagging:
+
+```bash
+nvm use
+npx auto-changelog@2.6.0 --package --commit-limit false
+git add package.json package-lock.json CHANGELOG.md
+git commit -m "Prepare release 2.0.0"
+git push origin master
+```
+
+`--package` writes a `CHANGELOG.md` entry named from the package version and
+containing commits since the previous tag. After CI passes, publish the release:
 
 ```bash
 gh release create 2.0.0 \
@@ -67,9 +79,9 @@ gh release create 2.0.0 \
   --generate-notes
 ```
 
-Replace `2.0.0` for later releases. `--generate-notes` puts merged PRs,
-contributors, and a changelog link since the previous tag in the release
-description on [GitHub Releases](https://github.com/devndeploy/n8n-nodes-stoa/releases); it creates no file. Use `--notes-file <file>` to use a file's contents as that description instead.
+Replace `2.0.0` for later releases. `CHANGELOG.md` is the committed history;
+`--generate-notes` separately puts merged PRs, contributors, and a comparison
+link in the [GitHub Release](https://github.com/devndeploy/n8n-nodes-stoa/releases) description. It creates no file.
 
 ## Resources
 
