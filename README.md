@@ -61,6 +61,7 @@ that used the removed Chat action.
 From a clean branch with CI passing, run:
 
 ```bash
+export GITHUB_TOKEN="$(gh auth token)"
 nvm use
 npm run release
 ```
