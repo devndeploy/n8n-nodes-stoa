@@ -57,8 +57,18 @@ that used the removed Chat action.
 
 ## Release
 
-Run `npm version patch --no-git-tag-version` (or `minor`/`major`), commit and
-push to `master`, wait for CI, then publish a GitHub Release with a matching tag.
+Bump the package version, push to `master`, wait for CI, then run:
+
+```bash
+gh release create 2.0.0 \
+  --repo devndeploy/n8n-nodes-stoa \
+  --target master \
+  --title "Release 2.0.0" \
+  --generate-notes
+```
+
+Replace `2.0.0` for later releases. `--generate-notes` summarizes changes since
+the previous release; use `--notes-file <file>` instead for custom notes.
 
 ## Resources
 
