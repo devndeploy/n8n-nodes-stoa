@@ -23,10 +23,12 @@
 		"lint:fix": "n8n-node lint --fix",
 		"release": "n8n-node release",
 		"prepublishOnly": "n8n-node prerelease",
-		"test": "node --test test/*.test.js"
+		"test": "node --test test/*.test.js",
+		"version": "auto-changelog --package"
 	},
 	"files": [
-		"dist"
+		"dist",
+		"CHANGELOG.md"
 	],
 	"n8n": {
 		"n8nNodesApiVersion": 1,
@@ -40,9 +42,14 @@
 			"dist/nodes/Stoa/LmChatStoa.node.js"
 		]
 	},
+	"auto-changelog": {
+		"commitLimit": false,
+		"template": ".auto-changelog.hbs"
+	},
 	"devDependencies": {
 		"@n8n/ai-node-sdk": "0.25.5",
 		"@n8n/node-cli": "*",
+		"auto-changelog": "2.6.0",
 		"eslint": "9.32.0",
 		"prettier": "3.6.2",
 		"release-it": "^19.0.4",

@@ -57,33 +57,12 @@ that used the removed Chat action.
 
 ## Release
 
-Set the version in `package.json` and `package-lock.json`, then generate and
-review its changelog entry before tagging:
+From a clean branch with CI passing, run:
 
 ```bash
 nvm use
-npx auto-changelog@2.6.0 --package --commit-limit false
-git add package.json package-lock.json CHANGELOG.md
-git commit -m "Prepare release 2.0.0"
-git push origin master
+npm run release
 ```
-
-`--package` writes a `CHANGELOG.md` entry named from the package version and
-containing commits since the previous tag. Because the new tag does not exist
-yet, add its UTC release date (`> D Month YYYY`) below the new heading before
-committing. After CI passes, publish the release:
-
-```bash
-gh release create 2.0.0 \
-  --repo devndeploy/n8n-nodes-stoa \
-  --target master \
-  --title "Release 2.0.0" \
-  --generate-notes
-```
-
-Replace `2.0.0` for later releases. `CHANGELOG.md` is the committed history;
-`--generate-notes` separately puts merged PRs, contributors, and a comparison
-link in the [GitHub Release](https://github.com/devndeploy/n8n-nodes-stoa/releases) description. It creates no file.
 
 ## Resources
 
