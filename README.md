@@ -69,7 +69,9 @@ git push origin master
 ```
 
 `--package` writes a `CHANGELOG.md` entry named from the package version and
-containing commits since the previous tag. After CI passes, publish the release:
+containing commits since the previous tag. Because the new tag does not exist
+yet, add its UTC release date (`> D Month YYYY`) below the new heading before
+committing. After CI passes, publish the release:
 
 ```bash
 gh release create 2.0.0 \
