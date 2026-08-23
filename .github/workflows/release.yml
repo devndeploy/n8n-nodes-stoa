@@ -40,12 +40,6 @@ jobs:
             exit 1
           fi
 
-      - name: Run lint
-        run: npm run lint
-
-      - name: Run tests
-        run: npm test
-
       - name: Build package
         run: npm run build
 

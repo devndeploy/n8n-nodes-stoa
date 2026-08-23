@@ -12,7 +12,7 @@ This is an n8n community node. It lets you use [Stoa](https://www.stoa.legal/) i
 
 Stoa is French legal AI for legal professionals (lawyers, notaries, juristes, …): it answers legal questions and manages documents with up-to-date French legislation.
 
-[Installation](#installation) · [Nodes](#nodes) · [Credentials](#credentials) · [Compatibility](#compatibility) · [Resources](#resources)
+[Installation](#installation) · [Nodes](#nodes) · [Credentials](#credentials) · [Compatibility](#compatibility) · [Release](#release) · [Resources](#resources)
 
 ## Installation
 
@@ -54,6 +54,11 @@ for local development. For step-by-step instructions, see the [Stoa documentatio
 Requires an n8n version that supports community AI language-model nodes and the
 `AiLanguageModel` connection. Version 2.0 is a breaking migration for workflows
 that used the removed Chat action.
+
+## Release
+
+Run `npm version patch --no-git-tag-version` (or `minor`/`major`), commit and
+push to `master`, wait for CI, then publish a GitHub Release with a matching tag.
 
 ## Resources
 
