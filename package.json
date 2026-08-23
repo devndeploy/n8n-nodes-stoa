@@ -1,11 +1,19 @@
 {
 	"name": "n8n-nodes-stoa",
 	"version": "2.0.0",
-	"description": "French legal AI for legal professionals: answers legal questions and manages documents with up-to-date French legislation.",
+	"description": "Legal AI for legal professionals: answers legal questions and manages documents using up-to-date legal sources.",
 	"license": "MIT",
 	"homepage": "https://www.stoa.legal/",
 	"keywords": [
-		"n8n-community-node-package"
+		"n8n-community-node-package",
+		"n8n",
+		"stoa",
+		"legal-ai",
+		"legaltech",
+		"law",
+		"legal-research",
+		"legal-automation",
+		"document-automation"
 	],
 	"author": {
 		"name": "Stoa team",
