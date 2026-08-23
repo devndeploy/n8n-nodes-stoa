@@ -11,13 +11,16 @@ export class Stoa implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Stoa',
 		name: 'stoa',
-		icon: 'file:../../icons/stoa.svg',
+		icon: {
+			light: 'file:../../icons/stoa.svg',
+			dark: 'file:../../icons/stoa-dark.svg',
+		},
 		group: ['transform'],
 		version: [1],
 		defaultVersion: 1,
 		usableAsTool: true,
 		subtitle: '={{ $parameter["resource"] }}',
-		description: 'Stoa: ask legal questions, manage files and folders, run workflows (doc review, summarize, legal refs)',
+		description: 'Manage Stoa files and folders and run document workflows',
 		defaults: {
 			name: 'Stoa',
 		},
@@ -42,24 +45,16 @@ export class Stoa implements INodeType {
 				type: 'options',
 				noDataExpression: true,
 				options: [
-					{ name: 'Chat', value: 'chat', description: 'Ask a legal question' },
 					{ name: 'File', value: 'file', description: 'Manage files' },
 					{ name: 'Folder', value: 'folder', description: 'Manage folders' },
-					{ name: 'Modèle', value: 'modeles', description: 'Validation templates and other resources' },
+					{
+						name: 'Validation Playbook',
+						value: 'playbooks',
+						description: 'List validation playbooks',
+					},
 					{ name: 'Workflow', value: 'workflow', description: 'Doc review, summarize, legal refs' },
 				],
-				default: 'chat',
-			},
-			// --- Chat
-			{
-				displayName: 'Message',
-				name: 'message',
-				type: 'string',
-				typeOptions: { rows: 4 },
-				default: '',
-				required: true,
-				description: 'User message to send to Stoa',
-				displayOptions: { show: { resource: ['chat'] } },
+				default: 'file',
 			},
 			// --- File operations
 			{
@@ -108,27 +103,25 @@ export class Stoa implements INodeType {
 				default: 'docReview',
 				displayOptions: { show: { resource: ['workflow'] } },
 			},
-			// --- Modèles operations
+			// --- Validation playbook operations
 			{
 				displayName: 'Operation',
 				name: 'operation',
 				type: 'options',
 				noDataExpression: true,
-				options: [
-					{ name: 'Get Validation Templates', value: 'validationTemplates', action: 'Get validation templates' },
-				],
-				default: 'validationTemplates',
-				displayOptions: { show: { resource: ['modeles'] } },
+				options: [{ name: 'List', value: 'list', action: 'List validation playbooks' }],
+				default: 'list',
+				displayOptions: { show: { resource: ['playbooks'] } },
 			},
 			// --- Workflow: Doc Review
 			{
-				displayName: 'Template ID',
-				name: 'validation_template_id',
+				displayName: 'Validation Playbook ID',
+				name: 'validation_playbook_id',
 				type: 'string',
 				default: '',
 				required: true,
 				displayOptions: { show: { resource: ['workflow'], operation: ['docReview'] } },
-				description: 'Validation template UUID',
+				description: 'Validation playbook UUID',
 			},
 			{
 				displayName: 'Text',
@@ -137,7 +130,9 @@ export class Stoa implements INodeType {
 				typeOptions: { rows: 4 },
 				default: '',
 				required: true,
-				displayOptions: { show: { resource: ['workflow'], operation: ['docReview', 'summarize', 'legalRefs'] } },
+				displayOptions: {
+					show: { resource: ['workflow'], operation: ['docReview', 'summarize', 'legalRefs'] },
+				},
 				description: 'Document text (with sentence IDs like [0], [1] for doc review)',
 			},
 			{
@@ -313,30 +308,25 @@ export class Stoa implements INodeType {
 		const items = this.getInputData();
 		const returnData: INodeExecutionData[] = [];
 		const resource = this.getNodeParameter('resource', 0) as string;
-		const operation = resource !== 'chat' ? (this.getNodeParameter('operation', 0) as string) : '';
-		const baseUrl = 'https://app.stoa.legal';
+		const operation = this.getNodeParameter('operation', 0) as string;
+		const credentials = await this.getCredentials('stoaApi');
+		const baseUrl = String(credentials.baseUrl || 'https://app.stoa.legal').replace(/\/+$/u, '');
 
 		for (let i = 0; i < items.length; i++) {
 			try {
 				let response: unknown;
 
-				if (resource === 'chat') {
-					const message = this.getNodeParameter('message', i) as string;
-					response = await this.helpers.httpRequestWithAuthentication.call(this, 'stoaApi', {
-						method: 'POST',
-						url: `${baseUrl}/api/plugins/simplified-chat`,
-						headers: { 'Content-Type': 'application/json' },
-						body: { message },
-						json: true,
-					});
-				} else if (resource === 'workflow') {
+				if (resource === 'workflow') {
 					if (operation === 'docReview') {
-						const validation_template_id = this.getNodeParameter('validation_template_id', i) as string;
+						const validation_playbook_id = this.getNodeParameter(
+							'validation_playbook_id',
+							i,
+						) as string;
 						const text = this.getNodeParameter('text', i) as string;
 						response = await this.helpers.httpRequestWithAuthentication.call(this, 'stoaApi', {
 							method: 'POST',
 							url: `${baseUrl}/api/plugins/workflows/doc-review`,
-							body: { validation_template_id, text },
+							body: { validation_playbook_id, text },
 							json: true,
 						});
 					} else if (operation === 'summarize') {
@@ -357,12 +347,15 @@ export class Stoa implements INodeType {
 							json: true,
 						});
 					} else {
-						throw new NodeOperationError(this.getNode(), `Unknown workflow operation: ${operation}`);
+						throw new NodeOperationError(
+							this.getNode(),
+							`Unknown workflow operation: ${operation}`,
+						);
 					}
-				} else if (resource === 'modeles') {
+				} else if (resource === 'playbooks') {
 					response = await this.helpers.httpRequestWithAuthentication.call(this, 'stoaApi', {
 						method: 'GET',
-						url: `${baseUrl}/api/plugins/workflows/validation-templates`,
+						url: `${baseUrl}/api/plugins/workflows/validation-playbooks`,
 						json: true,
 					});
 				} else if (resource === 'file') {
@@ -386,11 +379,15 @@ export class Stoa implements INodeType {
 						const item = items[i];
 						const binary = item.binary?.[binaryPropertyName];
 						if (!binary?.data) {
-							throw new NodeOperationError(this.getNode(), `No binary data for property "${binaryPropertyName}"`, { itemIndex: i });
+							throw new NodeOperationError(
+								this.getNode(),
+								`No binary data for property "${binaryPropertyName}"`,
+								{ itemIndex: i },
+							);
 						}
 						const buffer = await this.helpers.getBinaryDataBuffer(i, binaryPropertyName);
 						const formData = new FormData();
-						const fileName = (binary as IDataObject).fileName as string || 'file';
+						const fileName = ((binary as IDataObject).fileName as string) || 'file';
 						formData.append('file', new Blob([buffer]), fileName);
 						if (folder_id !== '') formData.append('folder_id', folder_id);
 						response = await this.helpers.httpRequestWithAuthentication.call(this, 'stoaApi', {
@@ -415,10 +412,17 @@ export class Stoa implements INodeType {
 						if (name !== '') body.name = name;
 						if (folder_id !== undefined) body.folder_id = folder_id === '' ? null : folder_id;
 						if (tag_ids_raw !== '') {
-							body.tag_ids = tag_ids_raw.split(',').map((s) => s.trim()).filter(Boolean);
+							body.tag_ids = tag_ids_raw
+								.split(',')
+								.map((s) => s.trim())
+								.filter(Boolean);
 						}
 						if (Object.keys(body).length === 0) {
-							throw new NodeOperationError(this.getNode(), 'Provide at least one of Name, Folder ID, or Tag IDs', { itemIndex: i });
+							throw new NodeOperationError(
+								this.getNode(),
+								'Provide at least one of Name, Folder ID, or Tag IDs',
+								{ itemIndex: i },
+							);
 						}
 						response = await this.helpers.httpRequestWithAuthentication.call(this, 'stoaApi', {
 							method: 'PATCH',
@@ -434,7 +438,9 @@ export class Stoa implements INodeType {
 							json: true,
 						});
 					} else {
-						throw new NodeOperationError(this.getNode(), `Unknown file operation: ${operation}`, { itemIndex: i });
+						throw new NodeOperationError(this.getNode(), `Unknown file operation: ${operation}`, {
+							itemIndex: i,
+						});
 					}
 				} else if (resource === 'folder') {
 					if (operation === 'list') {
@@ -473,7 +479,11 @@ export class Stoa implements INodeType {
 						if (name !== '') body.name = name;
 						if (parent_id !== undefined) body.parent_id = parent_id === '' ? null : parent_id;
 						if (Object.keys(body).length === 0) {
-							throw new NodeOperationError(this.getNode(), 'Provide at least one of Name or Parent Folder ID', { itemIndex: i });
+							throw new NodeOperationError(
+								this.getNode(),
+								'Provide at least one of Name or Parent Folder ID',
+								{ itemIndex: i },
+							);
 						}
 						response = await this.helpers.httpRequestWithAuthentication.call(this, 'stoaApi', {
 							method: 'PATCH',
@@ -489,10 +499,14 @@ export class Stoa implements INodeType {
 							json: true,
 						});
 					} else {
-						throw new NodeOperationError(this.getNode(), `Unknown folder operation: ${operation}`, { itemIndex: i });
+						throw new NodeOperationError(this.getNode(), `Unknown folder operation: ${operation}`, {
+							itemIndex: i,
+						});
 					}
 				} else {
-					throw new NodeOperationError(this.getNode(), `Unknown resource: ${resource}`, { itemIndex: i });
+					throw new NodeOperationError(this.getNode(), `Unknown resource: ${resource}`, {
+						itemIndex: i,
+					});
 				}
 
 				returnData.push({

@@ -13,22 +13,22 @@ export class StoaApi implements ICredentialType {
 
 	icon: Icon = { light: 'file:../icons/stoa.svg', dark: 'file:../icons/stoa-dark.svg' };
 
-	documentationUrl =
-		'https://stoa.legal/docs/getting-started/how-to-create-api-key';
+	documentationUrl = 'https://stoa.legal/docs/getting-started/how-to-create-api-key';
 
 	properties: INodeProperties[] = [
+		{
+			displayName: 'API Base URL',
+			name: 'baseUrl',
+			type: 'string',
+			default: 'https://app.stoa.legal',
+			description: 'Use the local Stoa server URL only for local development',
+		},
 		{
 			displayName: 'Access Token',
 			name: 'accessToken',
 			type: 'string',
 			typeOptions: { password: true },
 			default: '',
-		},
-		{
-			displayName: 'Allowed HTTP Request Domains',
-			name: 'allowedHttpRequestDomains',
-			type: 'hidden',
-			default: 'app.stoa.legal',
 		},
 	];
 
@@ -43,7 +43,7 @@ export class StoaApi implements ICredentialType {
 
 	test: ICredentialTestRequest = {
 		request: {
-			baseURL: 'https://app.stoa.legal',
+			baseURL: '={{$credentials.baseUrl}}',
 			url: '/api/plugins/health',
 			method: 'GET',
 		},

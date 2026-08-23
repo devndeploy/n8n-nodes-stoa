@@ -6,40 +6,56 @@
   </tr>
 </table>
 
-
 # n8n-nodes-stoa
 
 This is an n8n community node. It lets you use [Stoa](https://www.stoa.legal/) in your n8n workflows.
 
 Stoa is French legal AI for legal professionals (lawyers, notaries, juristes, …): it answers legal questions and manages documents with up-to-date French legislation.
 
-[Installation](#installation)  
-[Operations](#operations)  
-[Credentials](#credentials)
-[Compatibility](#compatibility)  
-[Resources](#resources)  
+[Installation](#installation) · [Nodes](#nodes) · [Credentials](#credentials) · [Compatibility](#compatibility) · [Resources](#resources)
 
 ## Installation
 
 Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes/installation/) in the n8n community nodes documentation.
 
-## Operations
+## Nodes
 
-* **Chat** — Ask legal questions and get answers from Stoa’s French legal knowledge base.
-* **File** — List, upload, get, update, and delete Stoa files.
-* **Folder** — List, create, get, update, and delete Stoa folders.
-* **Workflow** — Doc review, summarize, and legal refs.
-* **Modèles** — Get validation templates and other resources.
+### Stoa Chat Model
+
+Connect **Stoa Chat Model** to n8n's built-in **AI Agent** Chat Model input. The
+AI Agent can then use n8n tools and memory normally; Stoa transports tool calls
+and tool results through its integration chat API.
+
+Choose any combination of legal categories and Internet. A legal category
+activates every Stoa source available to the API-key organization in that
+jurisdiction. French Law and Internet are selected by default. Clearing every
+source is supported and makes Stoa return a no-source refusal.
+
+### Stoa
+
+The ordinary action node provides:
+
+- **File** — List, upload, get, update, and delete Stoa files.
+- **Folder** — List, create, get, update, and delete Stoa folders.
+- **Workflow** — Review documents, summarize, and extract legal references.
+- **Playbook** — List validation Playbooks.
+
+Chat is intentionally not an action in this node. Existing chat workflows must
+migrate to **Stoa Chat Model** plus n8n's **AI Agent**.
 
 ## Credentials
 
-This node uses **API key** credentials. For step-by-step instructions on creating and managing your API key, see the [Stoa documentation](https://www.stoa.legal/docs/getting-started/how-to-create-api-key).
+Both nodes use the same **Stoa API** credential. Set the API key created in Stoa
+settings. The API base URL defaults to `https://app.stoa.legal`; change it only
+for local development. For step-by-step instructions, see the [Stoa documentation](https://www.stoa.legal/docs/getting-started/how-to-create-api-key).
 
 ## Compatibility
 
-Works with any n8n version. There are no known version compatibility issues.
+Requires an n8n version that supports community AI language-model nodes and the
+`AiLanguageModel` connection. Version 2.0 is a breaking migration for workflows
+that used the removed Chat action.
 
 ## Resources
 
-* [n8n community nodes documentation](https://docs.n8n.io/integrations/#community-nodes)
-* [stoa.legal documentation](https://www.stoa.legal/docs)
+- [n8n community nodes documentation](https://docs.n8n.io/integrations/#community-nodes)
+- [stoa.legal documentation](https://www.stoa.legal/docs)

@@ -1,6 +1,6 @@
 {
 	"name": "n8n-nodes-stoa",
-	"version": "1.0.2",
+	"version": "2.0.0",
 	"description": "French legal AI for legal professionals: answers legal questions and manages documents with up-to-date French legislation.",
 	"license": "MIT",
 	"homepage": "https://www.stoa.legal/",
@@ -22,29 +22,35 @@
 		"lint": "n8n-node lint",
 		"lint:fix": "n8n-node lint --fix",
 		"release": "n8n-node release",
-		"prepublishOnly": "n8n-node prerelease"
+		"prepublishOnly": "n8n-node prerelease",
+		"test": "node --test test/*.test.js"
 	},
 	"files": [
 		"dist"
 	],
 	"n8n": {
 		"n8nNodesApiVersion": 1,
+		"aiNodeSdkVersion": 1,
 		"strict": false,
 		"credentials": [
 			"dist/credentials/StoaApi.credentials.js"
 		],
 		"nodes": [
-			"dist/nodes/Stoa/Stoa.node.js"
+			"dist/nodes/Stoa/Stoa.node.js",
+			"dist/nodes/Stoa/LmChatStoa.node.js"
 		]
 	},
 	"devDependencies": {
+		"@n8n/ai-node-sdk": "0.25.5",
 		"@n8n/node-cli": "*",
 		"eslint": "9.32.0",
 		"prettier": "3.6.2",
 		"release-it": "^19.0.4",
+		"n8n-workflow": "2.35.3",
 		"typescript": "5.9.2"
 	},
 	"peerDependencies": {
+		"@n8n/ai-node-sdk": "*",
 		"n8n-workflow": "*"
 	}
 }
