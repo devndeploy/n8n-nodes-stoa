@@ -67,8 +67,9 @@ gh release create 2.0.0 \
   --generate-notes
 ```
 
-Replace `2.0.0` for later releases. `--generate-notes` summarizes changes since
-the previous release; use `--notes-file <file>` instead for custom notes.
+Replace `2.0.0` for later releases. `--generate-notes` puts merged PRs,
+contributors, and a changelog link since the previous tag in the release
+description on [GitHub Releases](https://github.com/devndeploy/n8n-nodes-stoa/releases); it creates no file. Use `--notes-file <file>` to use a file's contents as that description instead.
 
 ## Resources
 
