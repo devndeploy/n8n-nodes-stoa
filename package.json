@@ -1,6 +1,6 @@
 {
 	"name": "n8n-nodes-stoa",
-	"version": "2.0.0",
+	"version": "2.0.1",
 	"description": "Legal AI for legal professionals: answers legal questions and manages documents using up-to-date legal sources.",
 	"license": "MIT",
 	"homepage": "https://www.stoa.legal/",
