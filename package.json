@@ -31,8 +31,7 @@
 		"lint:fix": "n8n-node lint --fix",
 		"release": "n8n-node release",
 		"prepublishOnly": "n8n-node prerelease",
-		"test": "node --test test/*.test.js",
-		"version": "auto-changelog --package"
+		"test": "node --test test/*.test.js"
 	},
 	"files": [
 		"dist",
@@ -56,12 +55,12 @@
 	},
 	"devDependencies": {
 		"@n8n/ai-node-sdk": "0.25.5",
-		"@n8n/node-cli": "*",
+		"@n8n/node-cli": "0.44.5",
 		"auto-changelog": "2.6.0",
 		"eslint": "9.32.0",
-		"prettier": "3.6.2",
-		"release-it": "^19.0.4",
 		"n8n-workflow": "2.35.3",
+		"prettier": "3.6.2",
+		"release-it": "20.2.0",
 		"typescript": "5.9.2"
 	},
 	"peerDependencies": {
